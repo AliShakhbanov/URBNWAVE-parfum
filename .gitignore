@@ -1,0 +1,9 @@
+node_modules
+.env
+analytics/
+dist/
+*.log
+*.err.log
+tmp_perfume_photos_tar/
+tmp_perfume_photos_2/
+.vercel/

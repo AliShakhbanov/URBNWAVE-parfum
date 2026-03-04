@@ -1,11 +1,52 @@
+# URBNWAVE
 
-  # Интернет-магазин одежды
+Премиальный storefront для распива и Atelier-линейки парфюма.
 
-  This is a code bundle for Интернет-магазин одежды. The original project is available at https://www.figma.com/design/WKKgkbKfkuzLOVJr39SsCs/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%BD%D0%B5%D1%82-%D0%BC%D0%B0%D0%B3%D0%B0%D0%B7%D0%B8%D0%BD-%D0%BE%D0%B4%D0%B5%D0%B6%D0%B4%D1%8B.
+## Запуск
 
-  ## Running the code
+1. Установите зависимости:
 
-  Run `npm i` to install the dependencies.
+```bash
+npm i
+```
 
-  Run `npm run dev` to start the development server.
-  
+2. Создайте `.env` из шаблона:
+
+```bash
+cp .env.example .env
+```
+
+3. В первом терминале запустите analytics endpoint:
+
+```bash
+npm run analytics:server
+```
+
+4. Во втором терминале запустите фронт:
+
+```bash
+npm run dev
+```
+
+## Сборка
+
+```bash
+npm run build
+```
+
+Во время `build` автоматически генерируются:
+- `public/sitemap.xml`
+- `public/og/default.svg`
+- `public/og/product-<id>.svg`
+
+## Analytics endpoint
+
+Локальный endpoint принимает события:
+- `POST /collect`
+- `GET /health`
+- `GET /events?limit=100`
+- `GET /metrics`
+
+События сохраняются в `analytics/events-YYYY-MM-DD.ndjson`.
+
+Фронт отправляет события, если задан `VITE_ANALYTICS_ENDPOINT`.

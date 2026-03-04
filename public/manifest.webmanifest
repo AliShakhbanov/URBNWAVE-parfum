@@ -1,0 +1,16 @@
+﻿{
+  "name": "URBNWAVE",
+  "short_name": "URBNWAVE",
+  "description": "Распив и вдохновленная парфюмерия URBNWAVE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0b",
+  "theme_color": "#0b0b0b",
+  "icons": [
+    {
+      "src": "/images/perfume/photo_2_2026-03-03_11-43-39.jpg",
+      "sizes": "768x768",
+      "type": "image/jpeg"
+    }
+  ]
+}
