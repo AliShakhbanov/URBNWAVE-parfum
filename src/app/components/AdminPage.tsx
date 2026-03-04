@@ -2,6 +2,7 @@
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 type AdminTab = "orders" | "products" | "content";
+type AuthMode = "login" | "register";
 
 type DbOrder = {
   id: string;
@@ -162,8 +163,10 @@ const pageLabels: Array<{ key: keyof SiteContent["pages"]; label: string }> = [
 
 export function AdminPage() {
   const [sessionEmail, setSessionEmail] = useState("");
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [tab, setTab] = useState<AdminTab>("orders");
   const [orders, setOrders] = useState<DbOrder[]>([]);
@@ -287,6 +290,48 @@ export function AdminPage() {
     setAuthLoading(false);
   };
 
+  const register = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!canUseSupabase) return;
+    if (!email.trim() || !password.trim()) {
+      setMessage("Укажите email и пароль");
+      return;
+    }
+    if (password.length < 6) {
+      setMessage("Пароль должен быть не короче 6 символов");
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setMessage("Пароли не совпадают");
+      return;
+    }
+
+    setAuthLoading(true);
+    setMessage("");
+    const { data, error } = await supabase!.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
+    });
+    if (error) {
+      setMessage(error.message);
+      setAuthLoading(false);
+      return;
+    }
+
+    if (!data.session) {
+      setMessage("Аккаунт создан. Подтвердите email и затем войдите.");
+      setAuthMode("login");
+      setPassword("");
+      setPasswordConfirm("");
+      setAuthLoading(false);
+      return;
+    }
+
+    setMessage("Регистрация успешна. Вы вошли в админку.");
+    setAuthLoading(false);
+  };
+
   const logout = async () => {
     if (!canUseSupabase) return;
     await supabase!.auth.signOut();
@@ -380,12 +425,57 @@ export function AdminPage() {
   if (!sessionEmail) {
     return (
       <section className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <form onSubmit={login} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
-          <h1 className="text-display text-white mb-1">Admin Login</h1>
-          <p className="text-neutral-400 text-sm">Вход в админку URBNWAVE</p>
+        <form onSubmit={authMode === "login" ? login : register} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className={`chip ${authMode === "login" ? "chip-active" : ""}`}
+              onClick={() => {
+                setAuthMode("login");
+                setMessage("");
+              }}
+            >
+              Вход
+            </button>
+            <button
+              type="button"
+              className={`chip ${authMode === "register" ? "chip-active" : ""}`}
+              onClick={() => {
+                setAuthMode("register");
+                setMessage("");
+              }}
+            >
+              Регистрация
+            </button>
+          </div>
+          <h1 className="text-display text-white mb-1">
+            {authMode === "login" ? "Admin Login" : "Admin Registration"}
+          </h1>
+          <p className="text-neutral-400 text-sm">
+            {authMode === "login"
+              ? "Вход в админку URBNWAVE"
+              : "Создайте аккаунт для доступа к админке URBNWAVE"}
+          </p>
           <input className="input-main w-full" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="input-main w-full" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <button type="submit" className="btn-primary w-full" disabled={authLoading}>{authLoading ? "Входим..." : "Войти"}</button>
+          {authMode === "register" && (
+            <input
+              className="input-main w-full"
+              placeholder="Повторите пароль"
+              type="password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+          )}
+          <button type="submit" className="btn-primary w-full" disabled={authLoading}>
+            {authLoading
+              ? authMode === "login"
+                ? "Входим..."
+                : "Регистрируем..."
+              : authMode === "login"
+                ? "Войти"
+                : "Зарегистрироваться"}
+          </button>
           {message && <p className="text-red-300 text-sm">{message}</p>}
         </form>
       </section>
