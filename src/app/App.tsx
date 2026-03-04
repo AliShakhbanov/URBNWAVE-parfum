@@ -72,6 +72,71 @@ const basePrefs: CatalogPrefs = {
   selectedLongevity: [],
 };
 
+type SiteSettings = {
+  hero: { title: string; subtitle: string; badge: string; image: string };
+  menu: { catalog: string; decants: string; atelier: string; top: string; quiz: string };
+  benefits: { items: Array<{ title: string; text: string }> };
+  brand: { title: string; subtitle: string; image: string; points: string[] };
+  pages: {
+    delivery: { title: string; text: string };
+    returns: { title: string; text: string };
+    payment: { title: string; text: string };
+    faq: { title: string; text: string };
+    about: { title: string; text: string };
+    contacts: { title: string; text: string };
+    stores: { title: string; text: string };
+    careers: { title: string; text: string };
+  };
+  faqItems: Array<{ question: string; answer: string }>;
+};
+
+const defaultSiteSettings: SiteSettings = {
+  hero: {
+    title: "Премиальный бренд распива и авторского парфюма URBNWAVE",
+    subtitle: "Сильная воронка: сначала именитые распивы, затем переход в вашу Atelier-линейку.",
+    badge: "-15% на первый заказ",
+    image: "/images/perfume/photo_11_2026-03-03_11-43-39.jpg",
+  },
+  menu: {
+    catalog: "Весь каталог",
+    decants: "Именитые распивы",
+    atelier: "Atelier URBNWAVE",
+    top: "Популярные распивы",
+    quiz: "Подбор",
+  },
+  benefits: {
+    items: [
+      { title: "Доставка 1-3 дня", text: "Москва, СПб и вся РФ" },
+      { title: "Контроль качества", text: "Партии и розлив фиксируются" },
+      { title: "Возврат 14 дней", text: "Прозрачные условия без бюрократии" },
+    ],
+  },
+  brand: {
+    title: "Премиальный бренд, который продает и вызывает доверие",
+    subtitle: "Стратегия URBNWAVE: покупатель сначала тестирует знакомые ароматические направления в распиве, затем знакомится с вашей авторской линией.",
+    image: "/images/perfume/photo_6_2026-03-03_11-43-39.jpg",
+    points: [
+      "Именитые ароматы на распив для первого доверия к качеству.",
+      "Atelier-линейка URBNWAVE для перехода на ваш собственный бренд.",
+      "Премиальный визуал, упаковка и прозрачная клиентская коммуникация.",
+    ],
+  },
+  pages: {
+    delivery: { title: "Доставка", text: "Доставляем по всей России. Курьер, ПВЗ и экспресс-доставка." },
+    returns: { title: "Возврат", text: "Вы можете вернуть товар в срок до 14 дней при соблюдении условий." },
+    payment: { title: "Оплата", text: "Онлайн-оплата пока не подключена. Заказы подтверждаются менеджером в WhatsApp/Telegram." },
+    faq: { title: "Вопросы", text: "Ответы о распиве, доставке и оплате." },
+    about: { title: "О бренде", text: "URBNWAVE: именитые ароматы для доверия и Atelier-линейка для роста собственного бренда." },
+    contacts: { title: "Контакты", text: "support@urbnwave.ru и Telegram @urbnwave_support" },
+    stores: { title: "Магазины", text: "Офлайн-точки и партнерские пространства в Москве и Санкт-Петербурге." },
+    careers: { title: "Карьера", text: "Ищем сильных людей в маркетинг, продукт и retail." },
+  },
+  faqItems: [
+    { question: "Что такое распив?", answer: "Это возможность протестировать аромат в меньшем объеме перед покупкой полноразмера." },
+    { question: "Как долго держится аромат?", answer: "Стойкость зависит от композиции и типа кожи, обычно от 4 до 10 часов." },
+  ],
+};
+
 
 
 function getDiscountedPrice(product: Product) {
@@ -315,22 +380,13 @@ function ToastStack({ toasts }: { toasts: ToastItem[] }) {
   return <div className="fixed top-20 right-4 z-[60] space-y-2">{toasts.map((t) => <div key={t.id} className="bg-neutral-900 border border-neutral-700 text-white rounded-xl px-4 py-3 shadow-lg">{t.text}</div>)}</div>;
 }
 
-function BenefitsStrip() {
-  const items = [
-    { icon: Truck, title: "Доставка 1-3 дня", text: "Москва, СПб и вся РФ" },
-    { icon: ShieldCheck, title: "Контроль качества", text: "Партии и розлив фиксируются" },
-    { icon: Check, title: "Возврат 14 дней", text: "Прозрачные условия без бюрократии" },
-  ];
-  return <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10"><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{items.map((item) => <div key={item.title} className="bg-neutral-900/95 border border-neutral-800 rounded-2xl p-5 backdrop-blur reveal-up"><item.icon className="w-6 h-6 text-[#e7b16c] mb-3" /><h3 className="text-white mb-1">{item.title}</h3><p className="text-neutral-400 text-sm">{item.text}</p></div>)}</div></section>;
+function BenefitsStrip({ items }: { items: Array<{ title: string; text: string }> }) {
+  const icons = [Truck, ShieldCheck, Check];
+  return <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10"><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{items.map((item, index) => { const Icon = icons[index % icons.length]; return <div key={`${item.title}-${index}`} className="bg-neutral-900/95 border border-neutral-800 rounded-2xl p-5 backdrop-blur reveal-up"><Icon className="w-6 h-6 text-[#e7b16c] mb-3" /><h3 className="text-white mb-1">{item.title}</h3><p className="text-neutral-400 text-sm">{item.text}</p></div>; })}</div></section>;
 }
 
-function BrandStory() {
-  const points = [
-    "Именитые ароматы на распив для первого доверия к качеству.",
-    "Atelier-линейка URBNWAVE для перехода на ваш собственный бренд.",
-    "Премиальный визуал, упаковка и прозрачная клиентская коммуникация.",
-  ];
-  return <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 page-enter"><div className="grid lg:grid-cols-2 gap-8 items-center"><div><p className="lux-kicker mb-2">Brand Narrative</p><h2 className="text-display text-white mb-4 lux-section-title">Премиальный бренд, который продает и вызывает доверие</h2><p className="text-neutral-300 mb-6">Стратегия URBNWAVE: покупатель сначала тестирует знакомые ароматические направления в распиве, затем знакомится с вашей авторской линией.</p><ul className="space-y-2">{points.map((p) => <li key={p} className="text-neutral-200 flex items-start gap-2"><Sparkles className="w-4 h-4 mt-1 text-[#e7b16c]" />{p}</li>)}</ul></div><div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5"><img src="/images/perfume/photo_6_2026-03-03_11-43-39.jpg" alt="URBNWAVE premium storytelling" className="w-full rounded-xl object-cover aspect-[4/3]" loading="lazy" /><div className="grid grid-cols-3 gap-3 mt-4 text-center"><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">24ч</p><p className="text-neutral-400 text-xs">подтверждение заказа</p></div><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">1k+</p><p className="text-neutral-400 text-xs">отгрузок в месяц</p></div><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">4.9</p><p className="text-neutral-400 text-xs">средний рейтинг</p></div></div></div></div></section>;
+function BrandStory({ content }: { content: SiteSettings["brand"] }) {
+  return <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 page-enter"><div className="grid lg:grid-cols-2 gap-8 items-center"><div><p className="lux-kicker mb-2">Brand Narrative</p><h2 className="text-display text-white mb-4 lux-section-title">{content.title}</h2><p className="text-neutral-300 mb-6">{content.subtitle}</p><ul className="space-y-2">{content.points.map((p, index) => <li key={`${p}-${index}`} className="text-neutral-200 flex items-start gap-2"><Sparkles className="w-4 h-4 mt-1 text-[#e7b16c]" />{p}</li>)}</ul></div><div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5"><img src={content.image} alt="URBNWAVE premium storytelling" className="w-full rounded-xl object-cover aspect-[4/3]" loading="lazy" /><div className="grid grid-cols-3 gap-3 mt-4 text-center"><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">24ч</p><p className="text-neutral-400 text-xs">подтверждение заказа</p></div><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">1k+</p><p className="text-neutral-400 text-xs">отгрузок в месяц</p></div><div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800"><p className="text-white text-2xl">4.9</p><p className="text-neutral-400 text-xs">средний рейтинг</p></div></div></div></div></section>;
 }
 
 function QuickViewModal({ product, onClose, onAddToCart, onToggleFavorite, isFavorite }: { product: Product | null; onClose: () => void; onAddToCart: (product: Product) => void; onToggleFavorite: (id: number) => void; isFavorite: boolean }) {
@@ -435,7 +491,7 @@ function HomePage(props: any) {
     <>
       <section className="relative h-[62vh] sm:h-[74vh] overflow-hidden bg-neutral-900 page-enter">
         <img
-          src="/images/perfume/photo_11_2026-03-03_11-43-39.jpg"
+          src={props.hero.image}
           alt="URBNWAVE premium hero"
           className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
@@ -446,10 +502,10 @@ function HomePage(props: any) {
         <div className="relative h-full flex items-center px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center editorial-shell">
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#f3c98f] border border-[#d89b4a66] bg-[#d89b4a1a] rounded-full px-3 py-1 mb-5">
-              <Flame className="w-3 h-3" /> -15% на первый заказ
+              <Flame className="w-3 h-3" /> {props.hero.badge}
             </p>
-            <h1 className="text-display text-white mb-4 lux-section-title lux-rule-center editorial-title">Премиальный бренд распива и авторского парфюма URBNWAVE</h1>
-            <p className="text-lg text-neutral-200 mb-8 editorial-lead">Сильная воронка: сначала именитые распивы, затем переход в вашу Atelier-линейку.</p>
+            <h1 className="text-display text-white mb-4 lux-section-title lux-rule-center editorial-title">{props.hero.title}</h1>
+            <p className="text-lg text-neutral-200 mb-8 editorial-lead">{props.hero.subtitle}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link to="/catalog" className="btn-primary">Купить сейчас</Link>
               <Link to="/quiz" className="btn-secondary">Подобрать аромат</Link>
@@ -457,11 +513,15 @@ function HomePage(props: any) {
           </div>
         </div>
       </section>
-      <BenefitsStrip />
-      <BrandStory />
+      <BenefitsStrip items={props.benefits.items} />
+      <BrandStory content={props.brand} />
       <CatalogSection {...props} title="Распив и Atelier URBNWAVE" subtitle="Именитые распивы + вдохновленные композиции" items={products} showFilter={true} />
     </>
   );
+}
+
+function FaqPage({ title, text, items }: { title: string; text: string; items: Array<{ question: string; answer: string }> }) {
+  return <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 page-enter"><div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8"><h2 className="text-display text-white mb-4 lux-section-title lux-rule-center">{title}</h2><p className="text-neutral-300 leading-relaxed mb-8">{text}</p><div className="space-y-3">{items.map((item, index) => <details key={`${item.question}-${index}`} className="rounded-xl border border-neutral-800 bg-neutral-950 p-4"><summary className="cursor-pointer text-white">{item.question}</summary><p className="text-neutral-400 mt-2 text-sm">{item.answer}</p></details>)}</div></div></section>;
 }
 
 function ProductPage({ product, onAddToCart, onToggleFavorite, favorites, onProductClick }: { product: Product; onAddToCart: (p: Product, volume?: number) => void; onToggleFavorite: (id: number) => void; favorites: Set<number>; onProductClick: (p: Product) => void }) {
@@ -643,6 +703,7 @@ export default function App() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [accountProfile, setAccountProfile] = useState<AccountProfile | null>(() => loadJSON<AccountProfile | null>(STORAGE_KEYS.accountProfile, null));
   const [accountOrders, setAccountOrders] = useState<AccountOrder[]>(() => loadJSON<AccountOrder[]>(STORAGE_KEYS.accountOrders, []));
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
 
   useEffect(() => { localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cartItems)); }, [cartItems]);
   useEffect(() => { localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(Array.from(favorites))); }, [favorites]);
@@ -661,6 +722,85 @@ export default function App() {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
   }, [location.pathname]);
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) return;
+    let mounted = true;
+    const loadSiteSettings = async () => {
+      const { data, error } = await supabase
+        .from("site_content")
+        .select("key, value")
+        .in("key", ["hero", "menu", "benefits", "brand", "pages", "faq_items"]);
+      if (error || !mounted) return;
+      const next = { ...defaultSiteSettings };
+      (data ?? []).forEach((row: any) => {
+        if (row.key === "hero") next.hero = { ...next.hero, ...(row.value ?? {}) };
+        if (row.key === "menu") next.menu = { ...next.menu, ...(row.value ?? {}) };
+        if (row.key === "benefits") next.benefits = { ...next.benefits, ...(row.value ?? {}) };
+        if (row.key === "brand") next.brand = { ...next.brand, ...(row.value ?? {}) };
+        if (row.key === "pages") next.pages = { ...next.pages, ...(row.value ?? {}) };
+        if (row.key === "faq_items") next.faqItems = Array.isArray(row.value?.items) ? row.value.items : next.faqItems;
+      });
+      setSiteSettings(next);
+    };
+    void loadSiteSettings();
+    const timer = setInterval(() => {
+      void loadSiteSettings();
+    }, 10000);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, []);
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase || !accountProfile?.phone) return;
+    let mounted = true;
+    const normalize = (value?: string | null) => (value ?? "").replace(/\D/g, "");
+    const localPhone = normalize(accountProfile.phone);
+    const localEmail = accountProfile.email.trim().toLowerCase();
+    const loadClientOrders = async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error || !mounted) return;
+      const mapped: AccountOrder[] = (data ?? [])
+        .filter((row: any) => {
+          const byPhone = localPhone.length > 0 && normalize(row.customer_phone) === localPhone;
+          const byEmail = localEmail.length > 0 && String(row.customer_email ?? "").trim().toLowerCase() === localEmail;
+          return byPhone || byEmail;
+        })
+        .map((row: any) => {
+          const rowItems = Array.isArray(row.items) ? row.items : [];
+          return {
+            id: String(row.id),
+            createdAt: row.created_at ?? new Date().toISOString(),
+            status: row.status ?? "new",
+            total: Number(row.total ?? 0),
+            items: rowItems.map((item: any) => {
+              const source = products.find((p) => p.name === item.name);
+              return {
+                id: source?.id ?? 0,
+                name: String(item.name ?? source?.name ?? "Товар"),
+                image: source?.image ?? "/images/perfume/photo_20_2026-03-03_11-43-39.jpg",
+                selectedVolume: Number(item.volume ?? source?.volume ?? 10),
+                quantity: Number(item.qty ?? 1),
+                unitPrice: Number(item.price ?? source?.price ?? 0),
+              };
+            }),
+          };
+        });
+      setAccountOrders(mapped);
+    };
+    void loadClientOrders();
+    const timer = setInterval(() => {
+      void loadClientOrders();
+    }, 10000);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, [accountProfile?.phone, accountProfile?.email]);
 
   const pushToast = (text: string) => { const id = Date.now() + Math.floor(Math.random() * 1000); setToasts((p) => [...p, { id, text }]); setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 2200); };
   const handleAddToCart = (product: Product, volume = product.volume) => { const cartKey = `${product.id}-${volume}`; const unitPrice = getPriceForVolume(product, volume); setCartItems((prev) => { const existing = prev.find((i) => i.cartKey === cartKey); if (!existing) return [...prev, { ...product, quantity: 1, selectedVolume: volume, unitPrice, cartKey }]; return prev.map((i) => i.cartKey === cartKey ? { ...i, quantity: i.quantity + 1 } : i); }); pushToast(`Добавлено в корзину: ${product.name} (${volume} мл)`); track("add_to_cart", { productId: product.id, volume }); };
@@ -761,7 +901,7 @@ export default function App() {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const favoriteProducts = products.filter((p) => favorites.has(p.id));
 
-  return <div className="min-h-screen bg-neutral-950"><SeoManager path={location.pathname} /><Header cartItemCount={totalItems} favoriteCount={favorites.size} searchQuery={searchQuery} onSearchChange={setSearchQuery} isAuthorized={Boolean(accountProfile)} onSearchSubmit={handleSearchSubmit} /><ToastStack toasts={toasts} /><AnimatePresence mode="wait" initial={false}><motion.main key={`${location.pathname}${location.search}`} initial={{ opacity: 0, y: 14, filter: "blur(4px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={{ opacity: 0, y: -10, filter: "blur(3px)" }} transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}><Routes location={location}><Route path="/" element={<HomePage {...sharedCatalogProps} />} /><Route path="/catalog" element={<CatalogSection {...sharedCatalogProps} title="Распив и Atelier" subtitle="Именитые ароматы в распиве и вдохновленная линейка" items={products} showFilter={true} />} /><Route path="/decants" element={<><CatalogSection {...sharedCatalogProps} title="Именитые распивы" subtitle="Популярные брендовые композиции" items={products.filter((x) => x.category === "Именитые распивы")} showFilter={false} /><SeoLandingBlock title="Именитые распивы: выгодный тест перед полноразмером" paragraphs={["Распив позволяет безопасно познакомиться с дорогими парфюмерными направлениями и выбрать аромат под личный стиль.", "Для SEO это важная посадочная страница под запросы о тестировании и подборе нишевых композиций."]} faq={[{ q: "Чем распив выгоднее полноразмера?", a: "Вы получаете возможность проверить аромат в реальных условиях, не переплачивая за большой объем." }, { q: "Кому подходит распив?", a: "Новичкам в нишевой парфюмерии и тем, кто выбирает аромат под сезон/сценарий." }]} /></>} /><Route path="/atelier" element={<><CatalogSection {...sharedCatalogProps} title="Atelier URBNWAVE" subtitle="Вдохновленные композиции бренда" items={products.filter((x) => x.category === "Atelier URBNWAVE · Вдохновленные")} showFilter={false} /><SeoLandingBlock title="Atelier URBNWAVE: авторская линейка бренда" paragraphs={["Atelier-линейка усиливает доверие после распива и переводит покупателя в ваш собственный продукт.", "На странице собраны композиции с разным характером: от легкого citrus до густых evening-аккордов."]} faq={[{ q: "В чем отличие Atelier от именитых распивов?", a: "Atelier — это ваша собственная интерпретация ароматических направлений, а не копия брендов." }, { q: "С чего начать знакомство?", a: "С компактных объемов 5-10 мл и мини-квиза под ваш стиль." }]} /></>} /><Route path="/top-decants" element={<CatalogSection {...sharedCatalogProps} title="Популярные распивы" subtitle="Топ ароматы по интересу покупателей" items={[...products].sort((a, b) => b.popularity - a.popularity).slice(0, 8)} showFilter={false} />} /><Route path="/favorites" element={<CatalogSection {...sharedCatalogProps} title="Избранное" subtitle="Ваш персональный список ароматов" items={favoriteProducts} showFilter={false} />} /><Route path="/quiz" element={quizResults.length === 0 ? <QuizSection onComplete={setQuizResults} /> : <QuizResults items={quizResults} onReset={() => setQuizResults([])} onProductClick={handleProductClick} onToggleFavorite={handleToggleFavorite} favorites={favorites} />} /><Route path="/cart" element={<CartPage items={cartItems} onUpdateQuantity={handleUpdateQuantity} onRemoveFromCart={handleRemoveFromCart} />} /><Route path="/checkout" element={<CheckoutPage items={cartItems} profile={accountProfile} onOrderComplete={handleOrderComplete} />} /><Route path="/product/:id" element={<ProductRoute onAddToCart={handleAddToCart} onToggleFavorite={handleToggleFavorite} favorites={favorites} onProductClick={handleProductClick} />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/analytics" element={<AnalyticsPage />} /><Route path="/account" element={<AccountPage profile={accountProfile} orders={accountOrders} favoriteProducts={favoriteProducts} onSaveProfile={handleSaveProfile} onLogout={handleLogout} onRepeatOrder={handleRepeatOrder} onOpenProduct={handleProductClick} />} /><Route path="/admin" element={<AdminPage />} /><Route path="/delivery" element={<InfoPage title="Доставка" text="Доставляем по всей России. Курьер, ПВЗ и экспресс-доставка." />} /><Route path="/returns" element={<InfoPage title="Возврат" text="Вы можете вернуть товар в срок до 14 дней при соблюдении условий." />} /><Route path="/payment" element={<InfoPage title="Оплата" text="Онлайн-оплата пока не подключена. Заказы подтверждаются менеджером в WhatsApp/Telegram." />} /><Route path="/faq" element={<InfoPage title="Вопросы" text="Ответы о распиве, доставке и оплате." />} /><Route path="/about" element={<InfoPage title="О бренде" text="URBNWAVE: именитые ароматы для доверия и Atelier-линейка для роста собственного бренда." />} /><Route path="/contacts" element={<InfoPage title="Контакты" text="support@urbnwave.ru и Telegram @urbnwave_support" />} /><Route path="/stores" element={<InfoPage title="Магазины" text="Офлайн-точки и партнерские пространства в Москве и Санкт-Петербурге." />} /><Route path="/careers" element={<InfoPage title="Карьера" text="Ищем сильных людей в маркетинг, продукт и retail." />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></motion.main></AnimatePresence><QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} onAddToCart={(p) => handleAddToCart(p, p.volume)} onToggleFavorite={handleToggleFavorite} isFavorite={quickViewProduct ? favorites.has(quickViewProduct.id) : false} /><Footer onToast={pushToast} /></div>;
+  return <div className="min-h-screen bg-neutral-950"><SeoManager path={location.pathname} /><Header cartItemCount={totalItems} favoriteCount={favorites.size} searchQuery={searchQuery} onSearchChange={setSearchQuery} isAuthorized={Boolean(accountProfile)} menuLabels={siteSettings.menu} onSearchSubmit={handleSearchSubmit} /><ToastStack toasts={toasts} /><AnimatePresence mode="wait" initial={false}><motion.main key={`${location.pathname}${location.search}`} initial={{ opacity: 0, y: 14, filter: "blur(4px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={{ opacity: 0, y: -10, filter: "blur(3px)" }} transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}><Routes location={location}><Route path="/" element={<HomePage {...sharedCatalogProps} hero={siteSettings.hero} benefits={siteSettings.benefits} brand={siteSettings.brand} />} /><Route path="/catalog" element={<CatalogSection {...sharedCatalogProps} title="Распив и Atelier" subtitle="Именитые ароматы в распиве и вдохновленная линейка" items={products} showFilter={true} />} /><Route path="/decants" element={<><CatalogSection {...sharedCatalogProps} title="Именитые распивы" subtitle="Популярные брендовые композиции" items={products.filter((x) => x.category === "Именитые распивы")} showFilter={false} /><SeoLandingBlock title="Именитые распивы: выгодный тест перед полноразмером" paragraphs={["Распив позволяет безопасно познакомиться с дорогими парфюмерными направлениями и выбрать аромат под личный стиль.", "Для SEO это важная посадочная страница под запросы о тестировании и подборе нишевых композиций."]} faq={[{ q: "Чем распив выгоднее полноразмера?", a: "Вы получаете возможность проверить аромат в реальных условиях, не переплачивая за большой объем." }, { q: "Кому подходит распив?", a: "Новичкам в нишевой парфюмерии и тем, кто выбирает аромат под сезон/сценарий." }]} /></>} /><Route path="/atelier" element={<><CatalogSection {...sharedCatalogProps} title="Atelier URBNWAVE" subtitle="Вдохновленные композиции бренда" items={products.filter((x) => x.category === "Atelier URBNWAVE · Вдохновленные")} showFilter={false} /><SeoLandingBlock title="Atelier URBNWAVE: авторская линейка бренда" paragraphs={["Atelier-линейка усиливает доверие после распива и переводит покупателя в ваш собственный продукт.", "На странице собраны композиции с разным характером: от легкого citrus до густых evening-аккордов."]} faq={[{ q: "В чем отличие Atelier от именитых распивов?", a: "Atelier — это ваша собственная интерпретация ароматических направлений, а не копия брендов." }, { q: "С чего начать знакомство?", a: "С компактных объемов 5-10 мл и мини-квиза под ваш стиль." }]} /></>} /><Route path="/top-decants" element={<CatalogSection {...sharedCatalogProps} title="Популярные распивы" subtitle="Топ ароматы по интересу покупателей" items={[...products].sort((a, b) => b.popularity - a.popularity).slice(0, 8)} showFilter={false} />} /><Route path="/favorites" element={<CatalogSection {...sharedCatalogProps} title="Избранное" subtitle="Ваш персональный список ароматов" items={favoriteProducts} showFilter={false} />} /><Route path="/quiz" element={quizResults.length === 0 ? <QuizSection onComplete={setQuizResults} /> : <QuizResults items={quizResults} onReset={() => setQuizResults([])} onProductClick={handleProductClick} onToggleFavorite={handleToggleFavorite} favorites={favorites} />} /><Route path="/cart" element={<CartPage items={cartItems} onUpdateQuantity={handleUpdateQuantity} onRemoveFromCart={handleRemoveFromCart} />} /><Route path="/checkout" element={<CheckoutPage items={cartItems} profile={accountProfile} onOrderComplete={handleOrderComplete} />} /><Route path="/product/:id" element={<ProductRoute onAddToCart={handleAddToCart} onToggleFavorite={handleToggleFavorite} favorites={favorites} onProductClick={handleProductClick} />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/analytics" element={<AnalyticsPage />} /><Route path="/account" element={<AccountPage profile={accountProfile} orders={accountOrders} favoriteProducts={favoriteProducts} onSaveProfile={handleSaveProfile} onLogout={handleLogout} onRepeatOrder={handleRepeatOrder} onOpenProduct={handleProductClick} />} /><Route path="/admin" element={<AdminPage />} /><Route path="/delivery" element={<InfoPage title={siteSettings.pages.delivery.title} text={siteSettings.pages.delivery.text} />} /><Route path="/returns" element={<InfoPage title={siteSettings.pages.returns.title} text={siteSettings.pages.returns.text} />} /><Route path="/payment" element={<InfoPage title={siteSettings.pages.payment.title} text={siteSettings.pages.payment.text} />} /><Route path="/faq" element={<FaqPage title={siteSettings.pages.faq.title} text={siteSettings.pages.faq.text} items={siteSettings.faqItems} />} /><Route path="/about" element={<InfoPage title={siteSettings.pages.about.title} text={siteSettings.pages.about.text} />} /><Route path="/contacts" element={<InfoPage title={siteSettings.pages.contacts.title} text={siteSettings.pages.contacts.text} />} /><Route path="/stores" element={<InfoPage title={siteSettings.pages.stores.title} text={siteSettings.pages.stores.text} />} /><Route path="/careers" element={<InfoPage title={siteSettings.pages.careers.title} text={siteSettings.pages.careers.text} />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></motion.main></AnimatePresence><QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} onAddToCart={(p) => handleAddToCart(p, p.volume)} onToggleFavorite={handleToggleFavorite} isFavorite={quickViewProduct ? favorites.has(quickViewProduct.id) : false} /><Footer onToast={pushToast} /></div>;
 }
 
 
