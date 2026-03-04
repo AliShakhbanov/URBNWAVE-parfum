@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Product } from "./ProductCard";
 
@@ -21,10 +21,19 @@ export interface AccountOrderItem {
 export interface AccountOrder {
   id: string;
   createdAt: string;
-  status: "new" | "confirmed";
+  status: "new" | "confirmed" | "packed" | "shipped" | "done" | "cancelled";
   total: number;
   items: AccountOrderItem[];
 }
+
+const accountOrderStatusLabels: Record<AccountOrder["status"], string> = {
+  new: "Новый",
+  confirmed: "Подтвержден",
+  packed: "Собран",
+  shipped: "Отправлен",
+  done: "Доставлен",
+  cancelled: "Отменен",
+};
 
 interface AccountPageProps {
   profile: AccountProfile | null;
@@ -62,10 +71,7 @@ export function AccountPage({
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8">
           <h1 className="text-display text-white mb-3 lux-section-title">Личный кабинет</h1>
           <p className="text-neutral-400 mb-6">Войдите, чтобы сохранить историю заказов и быстрые повторные покупки.</p>
-          <form
-            onSubmit={submit}
-            className="space-y-4"
-          >
+          <form onSubmit={submit} className="space-y-4">
             <input className="input-main w-full" placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} />
             <input className="input-main w-full" placeholder="Телефон" value={phone} onChange={(e) => setPhone(e.target.value)} />
             <input className="input-main w-full" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -116,7 +122,7 @@ export function AccountPage({
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <p className="text-white">Заказ #{order.id.slice(-6)}</p>
                   <span className="text-xs px-2 py-1 rounded-full border border-neutral-700 text-neutral-300">
-                    {order.status === "confirmed" ? "Подтвержден" : "Новый"}
+                    {accountOrderStatusLabels[order.status]}
                   </span>
                 </div>
                 <p className="text-neutral-400 text-sm mb-2">{new Date(order.createdAt).toLocaleString("ru-RU")}</p>

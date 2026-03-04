@@ -1,4 +1,4 @@
-import { ShoppingCart, Heart, Menu, Search, User, X } from "lucide-react";
+﻿import { ShoppingCart, Heart, Menu, Search, User, X } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
@@ -6,6 +6,13 @@ interface HeaderProps {
   cartItemCount: number;
   favoriteCount: number;
   isAuthorized: boolean;
+  menuLabels?: {
+    catalog: string;
+    decants: string;
+    atelier: string;
+    top: string;
+    quiz: string;
+  };
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onSearchSubmit: () => void;
@@ -18,6 +25,7 @@ export function Header({
   cartItemCount,
   favoriteCount,
   isAuthorized,
+  menuLabels,
   searchQuery,
   onSearchChange,
   onSearchSubmit,
@@ -29,6 +37,14 @@ export function Header({
     onSearchSubmit();
   };
 
+  const labels = {
+    catalog: menuLabels?.catalog || "Весь каталог",
+    decants: menuLabels?.decants || "Именитые распивы",
+    atelier: menuLabels?.atelier || "Atelier URBNWAVE",
+    top: menuLabels?.top || "Популярные распивы",
+    quiz: menuLabels?.quiz || "Подбор",
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-neutral-900/95 backdrop-blur border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,11 +54,11 @@ export function Header({
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <NavLink to="/catalog" className={navLinkClass}>Весь каталог</NavLink>
-            <NavLink to="/decants" className={navLinkClass}>Именитые распивы</NavLink>
-            <NavLink to="/atelier" className={navLinkClass}>Atelier URBNWAVE</NavLink>
-            <NavLink to="/top-decants" className={navLinkClass}>Популярные распивы</NavLink>
-            <NavLink to="/quiz" className={navLinkClass}>Подбор</NavLink>
+            <NavLink to="/catalog" className={navLinkClass}>{labels.catalog}</NavLink>
+            <NavLink to="/decants" className={navLinkClass}>{labels.decants}</NavLink>
+            <NavLink to="/atelier" className={navLinkClass}>{labels.atelier}</NavLink>
+            <NavLink to="/top-decants" className={navLinkClass}>{labels.top}</NavLink>
+            <NavLink to="/quiz" className={navLinkClass}>{labels.quiz}</NavLink>
           </nav>
 
           <form onSubmit={submitSearch} className="hidden sm:flex items-center gap-2 bg-neutral-800 rounded-lg px-2 py-1 min-w-56">
@@ -98,11 +114,11 @@ export function Header({
                 className="w-full bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none"
               />
             </form>
-            <NavLink to="/catalog" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Весь каталог</NavLink>
-            <NavLink to="/decants" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Именитые распивы</NavLink>
-            <NavLink to="/atelier" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Atelier URBNWAVE</NavLink>
-            <NavLink to="/top-decants" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Популярные распивы</NavLink>
-            <NavLink to="/quiz" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Подбор аромата</NavLink>
+            <NavLink to="/catalog" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">{labels.catalog}</NavLink>
+            <NavLink to="/decants" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">{labels.decants}</NavLink>
+            <NavLink to="/atelier" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">{labels.atelier}</NavLink>
+            <NavLink to="/top-decants" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">{labels.top}</NavLink>
+            <NavLink to="/quiz" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">{labels.quiz}</NavLink>
             <NavLink to="/account" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-neutral-400 hover:bg-neutral-800 rounded-lg transition-colors">Личный кабинет</NavLink>
           </div>
         </div>
