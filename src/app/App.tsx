@@ -7,6 +7,7 @@ import { AdminPage } from "./components/AdminPage";
 import { Header } from "./components/Header";
 import { Product, ProductCard } from "./components/ProductCard";
 import { products } from "./data/products";
+import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 type SortBy = "popular" | "newest" | "price-asc" | "price-desc" | "name-asc";
 type Longevity = "легкий" | "средний" | "стойкий";
@@ -671,7 +672,7 @@ export default function App() {
     const order: AccountOrder = {
       id: String(Date.now()),
       createdAt: new Date().toISOString(),
-      status: "confirmed",
+      status: "new",
       total: payload.total,
       items: payload.items.map((item) => ({
         id: item.id,
@@ -686,6 +687,34 @@ export default function App() {
     setAccountOrders((prev) => [order, ...prev].slice(0, 30));
     setCartItems([]);
     track("account_order_saved", { total: payload.total, items: payload.items.length });
+
+    if (isSupabaseConfigured && supabase) {
+      void supabase
+        .from("orders")
+        .insert({
+          status: "new",
+          customer_name: payload.customer.name,
+          customer_phone: payload.customer.phone,
+          customer_email: payload.customer.email || null,
+          customer_city: payload.customer.city || null,
+          total: payload.total,
+          items: payload.items.map((item) => ({
+            name: item.name,
+            qty: item.quantity,
+            volume: item.selectedVolume,
+            price: item.unitPrice,
+          })),
+        })
+        .then(({ error }) => {
+          if (error) {
+            pushToast(`Ошибка отправки в админку: ${error.message}`);
+            return;
+          }
+          pushToast("Заказ отправлен в админку");
+        });
+    } else {
+      pushToast("Заказ сохранен локально (Supabase не подключен)");
+    }
   };
   const handleRepeatOrder = (order: AccountOrder) => {
     setCartItems((prev) => {
